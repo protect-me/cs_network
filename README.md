@@ -683,8 +683,6 @@ packet이 하나 전달될 때, 다른 packet이 함께 전달되면 쓰레기�
 - token을 돌리면서 돌아가면서 token을 가진 Host만 전송함.
 - token을 분실하는 경우 전체가 피해를 보는 문제 => 현실에서 쓰이지 않음
 
-
-
 ## 5.4 LANs
 ### addressing, ARP
 (생략?)
@@ -698,18 +696,173 @@ packet이 하나 전달될 때, 다른 packet이 함께 전달되면 쓰레기�
 - A에서 보내고 있고, G에서는 A에서 시작된 것이 오고 있는 줄 모르고 시작했다가 충돌이 나고 G는 전송을 멈춤
 - 그러나 이미 출발한 frame의 조각이 있을 것이고, 퍼져나가고 있는데, A에 도착하기 직전에 A에서 나오던 frame이 모두 전송됨. 
 - G에서는 detection이 되었지만, A에서는 detection이 되지 않았기 때문에 방금 전에 보낸 frame은 재전송이 일어나지 않음
-- 해결 방법: frame size의 최소값을 정해줌 Lan의 길이만큼?
+- 해결 방법: frame size의 최소값을 설정(LAN의 길이)
 
+
+>
+MAC : Medium Access Control(MAC)
+앞 24bit: 제조사 번호
+뒤 24bit: 제조사의 고유번호
+>
+사람을 추상화해봤을 때,
+- 이름: Host name
+- 주소: IP address
+- 주민번호: MAC address
+머신의 MAC address는 언제 어디서도 바뀌지 않음
+
+### ARP
+- address resolution protocol
+- GWR(Gateway Router)의 IP는 아는데, 아직 모르는 MAC address를 알아오기 위한 프로토콜
+- ARP query를 broadcasting하고 GWR은 이에 응답함
+
+### Addressing: routing to another LAN
+- forwarding table lookup(출력 포트 확인) => ARP table lookup(MAC address 확인)
+- frame의 header(MAC src, MAC dest)를 계속해서 새로운 주소로 떼었다 붙였다 하면서 이동
+- packet에서 변하는 것은 TTL(Time To live, 데이터 유효 기간) 뿐
+
+![](https://images.velog.io/images/protect-me/post/4a2d1f3c-f00f-45c4-832d-f8feff6cd386/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202021-08-25%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2010.03.13.png)
+![](https://images.velog.io/images/protect-me/post/2f9f2f34-dab1-462b-84eb-c4cdde5bb270/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202021-08-25%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2010.03.32.png)
+![](https://images.velog.io/images/protect-me/post/746ccecb-e921-4a13-8590-88b242865184/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202021-08-25%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2010.03.41.png)
+![](https://images.velog.io/images/protect-me/post/808a2921-d88c-4078-9d1e-fa35d559761b/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202021-08-25%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2010.03.55.png)
+![](https://images.velog.io/images/protect-me/post/8a782b63-4b37-474b-a50f-5b1231631559/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202021-08-25%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%2010.04.07.png)
 
 ### switches
+![](https://images.velog.io/images/protect-me/post/b5b083d1-b678-4129-9db5-f40259af1143/image.png)
+#### switch:self-learning
+![](https://images.velog.io/images/protect-me/post/5ca8a9a4-b3c6-4408-88c4-043ae6ab7b92/image.png)
+- A에서 A'로 보내고 싶다고 switch에 보내면, switch에서는 A가 1번에 있구나를 알게 됨.
+- switch table에 A-1를 기록
+- A'를 swtich table에서 찾아보는데 없으므로, 1번 빼고 flood.
+- A'에서 A로 보내고 싶다고 switch에 보내면, switch에서는 A'가 4번에 있구나를 알게 됨.
+- switch table에 A'-4를 기록
+- A를 swtich table에서 찾아보니 있으므로, 1번으로 전달
+
+#### Interconnecting switches
+![](https://images.velog.io/images/protect-me/post/3e482651-c424-417d-ae99-373324aab47f/image.png)
+
+#### Switches vs Routers
+![](https://images.velog.io/images/protect-me/post/0944b2bd-7dfb-4332-ac2f-007ce2825472/image.png)
+
+> __router__
+네트워크 계층,
+라우팅 알고리즘을 통해 포워딩 테이블을 관리함
+IP Address
+
+> __switch__
+링크 계층, 
+self-learning, flood를 통해 스위치 테이블을 관리함
+특이하게도 본인은 MAC address는 없음. 즉, host에게는 안보임. 도우미 역할만 수행할 뿐.
+
+
+
 ### VLANS
 
 ## 5.5 link virualization: MPLS
+(생략)
+
 ## 5.6 data center networking
+
 ## 5.7 a day in the life of a web request
+![](https://images.velog.io/images/protect-me/post/37937a3e-3fdc-420d-93ff-3c7bf4f4c8ee/image.png)
 
 
 
+# 컴퓨터 네트워크 06 무선 네트워크 | KOCW 한양대 이석복
+
+# Wireless
+## 6.2 Wireless links, characteristics
+![](https://images.velog.io/images/protect-me/post/33d3ec73-f665-4c5a-9b62-ef1b3fb69ffd/image.png)
+> __무선에는 CDMA/CD을 적용하기 어려움__
+유선에서처럼 신호의 세기가 유지되지 않고 거리에 반비례하며 약해짐.
+내가 보내는 신호의 세기가 강하고 다른 신호의 세기가 약한 상황에서는 Detection도 잘 되지 않음.
+
+## 6.3 IEEE 802.11 Wireless LANs("Wi-Fi")
+- AP가 모여서 BSS가 된다
+base station = access point(AP)
+BSS(Basic Service Set)
+host들은 가까이 있는 AP에 요청을 하게 됨
+
+### CSMA/CA
+: Carrier Sense Multiple Access/Collision Avoidance
+
+#### feedback 도입
+유선(이더넷)의 경우, Collision Detection이 100%된다고 볼 수 있지만
+무선의 경우, 충돌 감지가 어렵기 때문에 링크 계층에 (이전에 전송 계층에서 본) ACK를 도입함
+내 바로 앞에 있는 AP와 나 사이의 feedback(ACK)
+=> feedback이 오기 전까지 충돌이 났는지 안났는지 모르기 때문에 실제로 충돌이 일어나도 계속해서 frame을 보낼 것이고 그만큼 시간은 낭비됨. 다른 host와 경쟁적으로 ACK를 받을 때까지 계속해서 재전송이 일어남
+=> 이것을 개선하고자 RTS-CTS를 도입
+
+#### RTS-CTS exchange
+![](https://images.velog.io/images/protect-me/post/8f34d668-f624-49d1-b396-9f49def6d3c0/image.png)
+- host는 frame을 보내기 전에 작은 RTS를 전송함. 충돌이 일어나면 재전송.
+- AP는 RTS를 받고 CTS를 broadcast
+- RTS(A) => CTS(A) \*CTS에는 A가 얼마만큼 사용할거니까 다 조용히 하라는 메시지가 담겨있음
+- A의 전송이 끝나면 ACK를 feedback
+- 즉, 채널 예약제라고 보면 된다.
+
+### 802.11 frame:addressing
+![](https://images.velog.io/images/protect-me/post/5ca15a57-21e2-40c6-984e-0f2c3852a274/image.png)
+- address 1: 받는 AP의 MAC addr
+- address 2: 보내는 HOST의 MAC addr
+- address 3: AP에서 전달될 Router의 MAC addr
+- address 4: 잘 쓰이지 않음
+![](https://images.velog.io/images/protect-me/post/4d542907-3989-419b-9a7e-61c5ca19b785/image.png)
+- address2, address3의 순서를 바꿔서 dest address, source address에 넣어 라우터에 전달
+- __즉, Host는 Wifi(802.11) frame을 전달하고
+이를 받은 AP는 Ethernet frame으로 전환 후 전달__
+
+> AP는 switch와 다르게 MAC address가 존재함 => 둘 다 링크 계층
+
+> Q. HOST에서 번거롭게 AP에 router MAC addr 달아서 보내주는 이유는?
+AP는 링크 계층까지 밖에 없기 때문에 frame을 까보고
+네트워크 계층의 IP packet을 확인할 능력이 없음
+(why? 링크 계층까지만 있으면 네트워크 계층에 있는 forwarding table이 없으니까 어디에 보내야하는지 판단할 수 없음)
+따라서 HOST에서 router MAC addr까지 붙여서 보내줘야함
+
+> [무선 기기] ---(A)- [AP] -(B)--- [Router]
+- 위 상황에서 AP의 A방면에는 MAC addr가 있지만 B방면에는 없음
+(마치 유선에서 switch가 그러했던 것처럼)
+따라서 Router 입장에서 AP는 보이지 않고, 무선기기가 모두 유선 연결된 것으로 인식됨
+- Q. switch에는 MAC addr가 없었는데 AP에 MAC addr가 있는 이유는?
+유선상황에서는 선을 따라 보내면 switch에 도달했지만
+무선상황에서는 전달을 하면 AP에 보내지는 보장이 되지 없음. 
+따라서 Host에서 보낼 때는 AP의 MAC addr가 필요함
+
+
+> 보통 가정에서 사용하는 무선 공유기는 보통 AP+Router로 합쳐져 구현된 기기
+=> 애플리케이션 계층까지 있기 때문에 NAT, DHCP를 기본적으로 제공함
+NAT: network address translation,
+DHCP: Dynamic Host Configuration Protocol
+
+ex) H1과 google의 통신(google에서 response를 보낼 때)
+![](https://images.velog.io/images/protect-me/post/d9dbd148-8d1c-4f2f-990c-dc158ac5ebd9/image.png)
+
+
+### 802.11: mobility within same subnet
+![](https://images.velog.io/images/protect-me/post/46aefd16-0704-4a8f-937c-ff33a5583be6/image.png)
+- 같은 switch 내에서 이동을 했을 경우 어떻게 될까?
+- 예를 들어 H1과 google이 TCP Connection을 맺었다고 하면
+Client(H1) IP/Port `<->` Server(Google) IP/Port
+위 네가지 정보를 통해 유일한 Connection이 맺어져있음.
+정보는 바뀌지 않을테니, switch table만 업데이트 해주면 된다.
+어떻게? H1에서 나갈 때 switch table은 자동으로 업데이트가 이루어짐.
+
+### 802.11: advanced capabilities
+![](https://images.velog.io/images/protect-me/post/bc8d77de-7c3a-477a-a164-7a2c57b6526c/image.png)
+- Mbps가 높을수록 에러가 발생할 확률이 높으므로,
+AP와 가까워지면 높게 유지, 멀어지면 낮게 변경하면서 속도를 조절함(에러에 대처하기 위함)
+
+
+## 6.4 Cellular Internet Access
+### architecture
+### standards(e.g. GSM)
+
+
+# Mobility(생략)
+## 6.5 addressing and routing to mobile users
+## 6.6 Mobiel IP
+## 6.7 Handling mobility in cellular networks
+## 6.8 Mobility and higher-layer protocols
 
 <br>
 <br>
