@@ -1,5 +1,5 @@
 > [KOCW | 컴퓨터네트워크 | 한양대학교 | 2015-2 | 이석복](http://www.kocw.net/home/cview.do?mty=p&kemId=1169634)
-[KOCW | 컴퓨터네트워크 | 한양대학교 | 2018-2 | 이석복](http://www.kocw.net/home/cview.do?mty=p&kemId=1169634)
+[KOCW | 컴퓨터네트워크 | 한양대학교 | 2018-2 | 이석복](http://www.kocw.net/home/search/kemView.do?kemId=1312397)
 >
 __위 강의를 수강하며 정리한 내용임을 밝힙니다.__
 네트워크 계층을 Top-Down 방식으로 위에서부터 한 겹씩 까보면서 디테일하게 알아보는 강의
